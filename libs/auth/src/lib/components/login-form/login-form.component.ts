@@ -7,13 +7,13 @@ import { Authenticate } from '@demo-app/data-models';
   styleUrls: ['./login-form.component.css']
 })
 export class LoginFormComponent implements OnInit {
-  @Output() submit = new EventEmitter<Authenticate>();
+  @Output() submitLogin = new EventEmitter<Authenticate>();
 
   constructor() {}
 
   ngOnInit(): void {}
 
   login(authenticate: Authenticate) {
-    this.submit.emit(authenticate);
+    this.submitLogin.emit(authenticate);
   }
 }
