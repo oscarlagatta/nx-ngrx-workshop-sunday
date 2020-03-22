@@ -1,16 +1,31 @@
 import { Injectable } from '@angular/core';
+import { Authenticate, User } from '@demo-app/data-models';
 import { HttpClient } from '@angular/common/http';
-import { Authenticate } from '@demo-app/data-models';
-import { Observable } from 'rxjs';
-import { User } from '@demo-app/data-models';
-
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
+​
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private httpClient: HttpClient) {}
-
-  login(authenticate: Authenticate): Observable<User> {
-    return this.httpClient.post<User>('http://localhost:3000/login', authenticate);
+  private userSubject$ = new BehaviorSubject<User>(null);
+  user$ = this.userSubject$.asObservable();
+​
+  constructor(private httpClient: HttpClient) {
+    const user = localStorage.getItem('user-workshop');
+    if(user) {
+      this.userSubject$.next(JSON.parse(user));
+    }
   }
+​
+  login(authenticate: Authenticate): Observable<User> {
+    return this.httpClient.post<User>(
+      'http://localhost:3000/login',
+      authenticate
+    ).pipe(tap((user: User) => {
+        this.userSubject$.next(user);
+        localStorage.setItem('user-workshop', JSON.stringify(user));
+    }));
+  }
+​
 }
